@@ -112,7 +112,7 @@ static int scan_number(void * ctx, const char *val, unsigned int len)
 
 				struct aws_dynamo_item *items;
 
-				items = calloc(sizeof(*items), _ctx->r->count);
+				items = calloc(_ctx->r->count, sizeof(*items));
 				if (items == NULL) {
 					Warnx("scan_number: item alloc failed.");
 					return 0;
@@ -542,7 +542,7 @@ struct aws_dynamo_scan_response *aws_dynamo_parse_scan_response(const char *resp
 		.attributes = attributes,
 	};
 
-	_ctx.r = calloc(sizeof(*(_ctx.r)), 1);
+	_ctx.r = calloc(1, sizeof(*(_ctx.r)));
 	if (_ctx.r == NULL) {
 		Warnx("aws_dynamo_parse_scan_response: alooc failed.");
 		return NULL;

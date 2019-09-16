@@ -286,7 +286,7 @@ struct aws_dynamo_get_item_response *aws_dynamo_parse_get_item_response(const ch
 		.attributes = attributes,
 	};
 
-	_ctx.r = calloc(sizeof(*(_ctx.r)), 1);
+	_ctx.r = calloc(1, sizeof(*(_ctx.r)));
 	if (_ctx.r == NULL) {
 		Warnx("aws_dynamo_parse_get_item_response: alloc failed.");
 		return NULL;

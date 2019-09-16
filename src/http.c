@@ -193,7 +193,7 @@ int http_transaction(void *handle, const char *initial_url,
 			if (stat(redir_file, &statbuf) != 0)
 				goto error;
 
-			redir_url = calloc(statbuf.st_size + 1, 1);
+			redir_url = calloc(1, statbuf.st_size + 1);
 			if (! redir_url)
 				goto error;
 			if (read(fd, redir_url, statbuf.st_size) != statbuf.st_size) {

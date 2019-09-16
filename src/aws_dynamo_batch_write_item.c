@@ -123,7 +123,7 @@ aws_dynamo_parse_batch_write_item_response(const char *response, int response_le
 	int i;
 	int state = PARSER_STATE_NONE;
 
-	r = calloc(sizeof(*r), 1);
+	r = calloc(1, sizeof(*r));
 	if (r == NULL) {
 		Warnx("aws_dynamo_parse_batch_write_item_response: alloc failed.");
 		return NULL;

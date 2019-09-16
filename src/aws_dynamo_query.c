@@ -110,7 +110,7 @@ static int query_number(void * ctx, const char *val, unsigned int len)
 
 				struct aws_dynamo_item *items;
 
-				items = calloc(sizeof(*items), q_ctx->r->count);
+				items = calloc(q_ctx->r->count, sizeof(*items));
 				if (items == NULL) {
 					Warnx("query_number: item alloc failed.");
 					return 0;
@@ -525,7 +525,7 @@ struct aws_dynamo_query_response *aws_dynamo_parse_query_response(const char *re
 		.attributes = attributes,
 	};
 
-	q_ctx.r = calloc(sizeof(*(q_ctx.r)), 1);
+	q_ctx.r = calloc(1, sizeof(*(q_ctx.r)));
 	if (q_ctx.r == NULL) {
 		Warnx("aws_dynamo_parse_query_response: alooc failed.");
 		return NULL;

@@ -48,7 +48,7 @@ struct aws_handle *aws_init(const char *aws_id, const char *aws_key) {
 	ENGINE_load_builtin_engines();
 	ENGINE_register_all_complete();
 
-	aws = calloc(sizeof(*aws), 1);
+	aws = calloc(1, sizeof(*aws));
 
 	if (aws == NULL) {
 		Errx("aws_init: Failed to allocate aws structure.");
@@ -230,7 +230,7 @@ static char *aws_dynamo_get_canonicalized_headers(struct http_headers *headers) 
 	}
 	canonical_headers_len++; /* \0 terminator */
 
-	ptr = canonical_headers = calloc(sizeof(char), canonical_headers_len);
+	ptr = canonical_headers = calloc(canonical_headers_len, sizeof(char));
 
 	if (ptr == NULL) {
 		Err("aws_dynamo_get_canonicalized_headers: Failed to allocate.");

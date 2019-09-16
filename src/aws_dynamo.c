@@ -696,7 +696,7 @@ int aws_dynamo_parse_attribute_value(struct aws_dynamo_attribute *attribute, con
 						return 0;
 					}
 
-					attribute->value.number.value.integer_val = calloc(sizeof(aws_dynamo_integer_t), 1);
+					attribute->value.number.value.integer_val = calloc(1, sizeof(aws_dynamo_integer_t));
 					if (attribute->value.number.value.integer_val == NULL) {
 						Warnx("aws_dynamo_parse_attribute_value: number alloc failed");
 						return 0;
@@ -718,7 +718,7 @@ int aws_dynamo_parse_attribute_value(struct aws_dynamo_attribute *attribute, con
 						return 0;
 					}
 
-					attribute->value.number.value.double_val = calloc(sizeof(aws_dynamo_double_t), 1);
+					attribute->value.number.value.double_val = calloc(1, sizeof(aws_dynamo_double_t));
 					if (attribute->value.number.value.double_val == NULL) {
 						Warnx("aws_dynamo_parse_attribute_value: number alloc failed");
 						return 0;
@@ -812,7 +812,7 @@ struct aws_dynamo_item *aws_dynamo_copy_item(struct aws_dynamo_item *item) {
 					case AWS_DYNAMO_NUMBER_INTEGER: {
 						copy->attributes[j].value.number.type = AWS_DYNAMO_NUMBER_INTEGER;
 						if (attribute->value.number.value.integer_val != NULL) {
-							copy->attributes[j].value.number.value.integer_val = calloc(sizeof(aws_dynamo_integer_t), 1);
+							copy->attributes[j].value.number.value.integer_val = calloc(1, sizeof(aws_dynamo_integer_t));
 							if (copy->attributes[j].value.number.value.integer_val == NULL) {
 								Warnx("aws_dynamo_copy_item: calloc() for int val failed.");
 								goto error;
@@ -824,7 +824,7 @@ struct aws_dynamo_item *aws_dynamo_copy_item(struct aws_dynamo_item *item) {
 					case AWS_DYNAMO_NUMBER_DOUBLE: {
 						copy->attributes[j].value.number.type = AWS_DYNAMO_NUMBER_DOUBLE;
 						if (attribute->value.number.value.double_val != NULL) {
-							copy->attributes[j].value.number.value.double_val = calloc(sizeof(aws_dynamo_double_t), 1);
+							copy->attributes[j].value.number.value.double_val = calloc(1, sizeof(aws_dynamo_double_t));
 							if (copy->attributes[j].value.number.value.double_val == NULL) {
 								Warnx("aws_dynamo_copy_item: calloc() for double val failed.");
 								goto error;

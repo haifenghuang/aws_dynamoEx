@@ -493,13 +493,13 @@ struct aws_dynamo_batch_get_item_response * aws_dynamo_parse_batch_get_item_resp
 		.tables = tables,
 	};
 
-	_ctx.r = calloc(sizeof(*(_ctx.r)), 1);
+	_ctx.r = calloc(1, sizeof(*(_ctx.r)));
 	if (_ctx.r == NULL) {
 		Warnx("aws_dynamo_parse_batch_get_item_response: response alloc failed.");
 		return NULL;
 	}
 
-	_ctx.r->tables = calloc(sizeof(*tables), num_tables);
+	_ctx.r->tables = calloc(num_tables, sizeof(*tables));
 	if (_ctx.r->tables == NULL) {
 		Warnx("aws_dynamo_parse_batch_get_item_response: table alloc failed.");
 		free(_ctx.r);

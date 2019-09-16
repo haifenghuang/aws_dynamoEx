@@ -57,7 +57,7 @@ sim_read_file(const char *filename)
 		goto error;
 	}
 
-	contents = calloc(statbuf.st_size + 1, 1);
+	contents = calloc(1, statbuf.st_size + 1);
 
 	if (contents == NULL) {
 		perror("calloc");

@@ -370,7 +370,7 @@ struct aws_dynamo_delete_item_response *aws_dynamo_parse_delete_item_response(co
 		.attributes = attributes,
 	};
 
-	_ctx.r = calloc(sizeof(*(_ctx.r)), 1);
+	_ctx.r = calloc(1, sizeof(*(_ctx.r)));
 	if (_ctx.r == NULL) {
 		Warnx("aws_dynamo_parse_delete_item_response: alloc failed.");
 		return NULL;

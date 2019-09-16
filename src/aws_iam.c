@@ -329,7 +329,7 @@ static struct aws_session_token *aws_iam_parse_credentials(const char *response,
 
 	yajl_free(hand);
 
-	token = calloc(sizeof(*token), 1);
+	token = calloc(1, sizeof(*token));
 
 	if (token == NULL) {
 		Warnx("aws_iam_parse_credentials: Failed to allocate token.");

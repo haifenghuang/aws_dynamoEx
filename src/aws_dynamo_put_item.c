@@ -344,7 +344,7 @@ struct aws_dynamo_put_item_response * aws_dynamo_parse_put_item_response(const c
 	yajl_status stat;
 	struct put_item_ctx _ctx = { 0 };
 
-	_ctx.r = calloc(sizeof(*(_ctx.r)), 1);
+	_ctx.r = calloc(1, sizeof(*(_ctx.r)));
 	if (_ctx.r == NULL) {
 		Warnx("aws_dynamo_parse_put_item_response: response alloc failed.");
 		return NULL;
