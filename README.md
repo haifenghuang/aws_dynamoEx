@@ -1,7 +1,7 @@
 aws_dynamo
 ==========
 
-AWS DynamoDB Library for C and C++
+AWS DynamoDB Library for C and C++ with my extension and some bug fixes.
 
 Features
 ========
@@ -11,6 +11,12 @@ Features
   from within C applications.
 * Supports obtaining AWS credentials from an IAM Role,
   environment variables or initialization parameters
+
+My Extension
+============
+
+* Fix 'calloc' function parameters order problem.
+
 
 Supported Systems
 =================
