@@ -16,6 +16,7 @@ My Extension
 ============
 
 * Fix 'calloc' function parameters order problem.
+* Fix memory leak when calling dynamodb multiple times.
 
 
 Supported Systems

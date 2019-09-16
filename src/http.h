@@ -47,7 +47,7 @@ char *http_url_encode(void *handle, const char *string);
  * @response: HTTP response code
  */
 struct http_buffer {
-	unsigned char *data;
+	unsigned char data[HTTP_PAGE_BUFFER_SIZE];
 	unsigned int max;
 	unsigned int cur;
 	long response;
