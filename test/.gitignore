@@ -1,0 +1,12 @@
+*.test
+*.trs
+*.log
+Makefile
+*_tests
+*_test
+*.o
+*.lo
+.deps
+.libs
+*.la
+*~
