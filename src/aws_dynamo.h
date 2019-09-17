@@ -81,6 +81,11 @@ extern "C" {
 #define AWS_DYNAMO_INTERNAL_FAILURE										"InternalFailure"
 #define AWS_DYNAMO_INTERNAL_SERVER_ERROR								"InternalServerError"
 #define AWS_DYNAMO_SERVICE_UNAVAILABLE_EXCEPTION 					"ServiceUnavailableException"
+#define AWS_DYNAMO_REQUESTLIMIT_EXCEEDED 					"RequestLimitExceeded"
+#define AWS_DYNAMO_ITEMCOLLECTION_SIZELIMIT_EXCEEDED_EXCEPTION 	"ItemCollectionSizeLimitExceededException"
+#define AWS_DYNAMO_TRANSACTION_CONFLICT_EXCEPTION 	"TransactionConflictException"
+#define AWS_DYNAMO_SERIALIZATION_EXCEPTION 	        "SerializationException"
+#define AWS_DYNAMO_INVALIDSIGNATURE_EXCEPTION 	    "InvalidSignatureException"
 
 enum {
 	AWS_DYNAMO_CODE_UNKNOWN,
@@ -98,6 +103,11 @@ enum {
 	AWS_DYNAMO_CODE_INTERNAL_FAILURE,
 	AWS_DYNAMO_CODE_INTERNAL_SERVER_ERROR,
 	AWS_DYNAMO_CODE_SERVICE_UNAVAILABLE_EXCEPTION,
+	AWS_DYNAMO_CODE_REQUESTLIMIT_EXCEEDED,
+	AWS_DYNAMO_CODE_ITEMCOLLECTION_SIZELIMIT_EXCEEDED_EXCEPTION,
+	AWS_DYNAMO_CODE_TRANSACTION_CONFLICT_EXCEPTION,
+	AWS_DYNAMO_CODE_SERIALIZATION_EXCEPTION,
+  AWS_DYNAMO_CODE_INVALIDSIGNATURE_EXCEPTION,
 };
 
 #define AWS_DYNAMO_JSON_RESPONSES			"Responses"
@@ -148,6 +158,9 @@ enum {
 #define AWS_DYNAMO_JSON_TABLE_STATUS_ACTIVE		"ACTIVE"
 #define AWS_DYNAMO_JSON_TABLE_STATUS_DELETING	"DELETING"
 #define AWS_DYNAMO_JSON_TABLE_STATUS_UPDATING	"UPDATING"
+
+#define AWS_DYNAMO_JSON_V2_CONSUMED_CAPACITY  "ConsumedCapacity"
+#define AWS_DYNAMO_JSON_V2_CAPACITY_UNITS     "CapacityUnits"
 
     /*FIXME: Rename*/
 #define AWS_DYNAMO_VALCMP(s, val, len) (len == strlen(s) && \
@@ -311,6 +324,12 @@ struct aws_dynamo_item *aws_dynamo_copy_item(struct aws_dynamo_item *item);
 
 void aws_dynamo_free_item(struct aws_dynamo_item *item);
 
+#include "aws_dynamo_v2_get_item.h"
+#include "aws_dynamo_v2_delete_item.h"
+#include "aws_dynamo_v2_put_item.h"
+#include "aws_dynamo_v2_update_item.h"
+#include "aws_dynamo_v2_query.h"
+#include "aws_dynamo_v2_scan.h"
 #include "aws_dynamo_batch_get_item.h"
 #include "aws_dynamo_batch_write_item.h"
 #include "aws_dynamo_create_table.h"

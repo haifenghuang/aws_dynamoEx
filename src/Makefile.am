@@ -21,7 +21,14 @@ libaws_dynamo_la_SOURCES = aws.c aws_dynamo.c \
 	jsmn.c \
 	sim.c \
 	jsmn.h \
-	http.h
+	http.h \
+	aws_dynamo_v2_delete_item.c \
+	aws_dynamo_v2_get_item.c \
+	aws_dynamo_v2_put_item.c \
+	aws_dynamo_v2_query.c \
+	aws_dynamo_v2_scan.c \
+	aws_dynamo_v2_update_item.c
+
 
 libaws_dynamo_la_CPPFLAGS = -I$(top_srcdir)/src
 libaws_dynamo_la_LDFLAGS = -version-info 0:0:0
@@ -43,7 +50,13 @@ pkginclude_HEADERS=\
 	aws_dynamo_update_table.h \
 	aws_kinesis.h \
 	aws_kinesis_put_record.h \
-	aws.h
+	aws.h \
+	aws_dynamo_v2_delete_item.h \
+	aws_dynamo_v2_get_item.h \
+	aws_dynamo_v2_put_item.h \
+	aws_dynamo_v2_query.h \
+	aws_dynamo_v2_scan.h \
+	aws_dynamo_v2_update_item.h
 
 
 # We need to run ldconfig on some systems after installing.

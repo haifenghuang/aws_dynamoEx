@@ -16,7 +16,11 @@ My Extension
 ============
 
 * Fix 'calloc' function parameters order problem.
-* Fix memory leak when calling dynamodb multiple times.
+* Fix memory leak when calling DynamoDB multiple times.
+* Add DynamoDB v2 protocols response parsing.
+* Much simpler API calling for the DynamoDB v2 protocols.
+* DynamoDB v2 response parsing is much simpler to understand(no parse state and no need for template).
+* Fix DynamoDB 'query' and 'scan' bugs if response's 'count' attribute is placed before 'items' attribute.
 
 
 Supported Systems

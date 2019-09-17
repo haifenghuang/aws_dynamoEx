@@ -27,6 +27,10 @@
 #include "aws_dynamo_utils.h"
 #include "jsmn.h"
 
+#ifndef MAXPATH_LEVEL
+    #define MAXPATH_LEVEL 256
+#endif
+
 static const char *parser_state_strings[] = {
 	"none",
 	"root map",
@@ -73,3 +77,146 @@ void dump_token(jsmntok_t * t, const char *response)
 	free(str);
 }
 
+yajl_val yajl_getNode(yajl_val node, const char *path) {
+    int i = 0;
+    const char *paths[MAXPATH_LEVEL]; /* maximum path levels */
+    yajl_val result = NULL;
+
+    for (i = 0; i < MAXPATH_LEVEL; i++) paths[i] = NULL; /* init */
+
+    i = 0;
+    char *path_tmp = strdup(path);
+    char *pch = strtok(path_tmp, "/");
+    while (pch != NULL) {
+        if (i == MAXPATH_LEVEL) {
+            Err("JSON tree path too long: '%s'", path);
+            goto bail;
+        }
+
+        paths[i++] = pch;
+        pch = strtok(NULL, "/");
+    }
+
+    result = yajl_tree_get(node, paths, yajl_t_any);
+
+bail:
+    free(path_tmp);
+    return result;
+}
+
+int getArrayItems(yajl_val node, struct aws_dynamo_item *items, const char *path) {
+    int i = 0, j = 0;
+
+    yajl_val v = yajl_getNode(node, path);
+    if (v == NULL) {
+        Warnx("geArrayItems: path '%s' not found.", path);
+        return 1;
+    }
+
+    int arr_len = YAJL_GET_ARRAY(v)->len;
+    if (arr_len == 0) {
+        return 0;
+    }
+
+    yajl_val *arr =YAJL_GET_ARRAY(v)->values;
+    for (i = 0; i < arr_len; i++) {
+        struct aws_dynamo_item *item = &(items[i]);
+
+        yajl_val obj = arr[i];
+
+        int obj_len = YAJL_GET_OBJECT(obj)->len;
+
+        item->num_attributes = obj_len;
+        item->attributes = calloc(obj_len, sizeof(*(item->attributes)));
+        if (item->attributes == NULL) {
+            Errx("getObjectItem: allocation failed");
+            return 1;
+        }
+
+        for (j = 0; j < obj_len; j++) {
+            struct aws_dynamo_attribute *attribute = &(item->attributes[j]);
+
+            const char *key = YAJL_GET_OBJECT(obj)->keys[j];
+            attribute->name = strdup(key);
+            attribute->name_len = strlen(key);
+
+            yajl_val attr = YAJL_GET_OBJECT(obj)->values[j];
+
+            const char *attr_type = YAJL_GET_OBJECT(attr)->keys[0];
+            attribute->type = str2AttrType(attr_type);
+
+            yajl_val attr_val = YAJL_GET_OBJECT(attr)->values[0];
+            const char *val = YAJL_GET_STRING(attr_val);
+
+            aws_dynamo_parse_attribute_value(attribute, val, strlen(val));
+        } /* inner for */
+    } /* outer for */
+
+    return 0;
+}
+
+int getObjectItem(yajl_val node, struct aws_dynamo_item *item, char *path) {
+    yajl_val obj = yajl_getNode(node, path);
+    if (obj == NULL) {
+        Warnx("getObjectItem: path '%s' not found.", path);
+        return 1;
+    }
+
+    int obj_len = YAJL_GET_OBJECT(obj)->len;
+
+    item->num_attributes = obj_len;
+    item->attributes = calloc(obj_len, sizeof(*(item->attributes)));
+    if (item->attributes == NULL) {
+        Errx("getObjectItem: allocation failed");
+        return 1;
+    }
+
+    int i = 0;
+    for (i = 0; i < obj_len; i++) {
+        struct aws_dynamo_attribute *attribute = &item->attributes[i];
+	
+        const char *key = YAJL_GET_OBJECT(obj)->keys[i];
+        attribute->name = strdup(key);
+        attribute->name_len = strlen(key);
+
+        yajl_val attr = YAJL_GET_OBJECT(obj)->values[i];
+        const char *attr_type = YAJL_GET_OBJECT(attr)->keys[0];
+        attribute->type = str2AttrType(attr_type);
+	
+        yajl_val attr_val = YAJL_GET_OBJECT(attr)->values[0];
+        const char *val = YAJL_GET_STRING(attr_val);
+
+        aws_dynamo_parse_attribute_value(attribute, val, strlen(val));
+    } /* inner for */
+
+    return 0;
+}
+
+enum aws_dynamo_attribute_type str2AttrType(const char *str) {
+    if (strcmp(str, AWS_DYNAMO_JSON_TYPE_STRING) == 0) {
+        return AWS_DYNAMO_STRING;
+    } else if (strcmp(str, AWS_DYNAMO_JSON_TYPE_STRING_SET) == 0) {
+        return AWS_DYNAMO_STRING_SET;
+    } else if (strcmp(str, AWS_DYNAMO_JSON_TYPE_NUMBER) == 0) {
+        return AWS_DYNAMO_NUMBER;
+    } else if (strcmp(str, AWS_DYNAMO_JSON_TYPE_NUMBER_SET) == 0) {
+        return AWS_DYNAMO_NUMBER_SET;
+    }
+
+    return AWS_DYNAMO_STRING;
+}
+
+char *attrType2Str(enum aws_dynamo_attribute_type type) {
+    switch (type) {
+        case AWS_DYNAMO_STRING:
+            return AWS_DYNAMO_JSON_TYPE_STRING;
+        case AWS_DYNAMO_STRING_SET:
+            return AWS_DYNAMO_JSON_TYPE_STRING_SET;
+        case AWS_DYNAMO_NUMBER:
+            return AWS_DYNAMO_JSON_TYPE_NUMBER;
+        case AWS_DYNAMO_NUMBER_SET:
+            return AWS_DYNAMO_JSON_TYPE_NUMBER_SET;
+    }
+
+    return AWS_DYNAMO_JSON_TYPE_STRING;
+}

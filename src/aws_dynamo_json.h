@@ -20,6 +20,7 @@
 #define _AWS_DYNAMO_JSON_H_
 
 #include "aws_dynamo.h"
+#include <yajl/yajl_tree.h>
 #include "jsmn.h"
 
 #ifdef __cplusplus
@@ -39,6 +40,16 @@ enum {
 
 const char *parser_state_string(int state);
 void dump_token(jsmntok_t * t, const char *response);
+
+/* get node using path, path is separated by '/'. */
+yajl_val yajl_getNode(yajl_val node, const char *path);
+
+int getArrayItems(yajl_val node, struct aws_dynamo_item *items, const char *path);
+
+int getObjectItem(yajl_val node, struct aws_dynamo_item *item, char *path);
+
+enum aws_dynamo_attribute_type str2AttrType(const char *str);
+char *attrType2Str(enum aws_dynamo_attribute_type type);
 
 #ifdef  __cplusplus
 }
