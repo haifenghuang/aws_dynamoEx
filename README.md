@@ -74,22 +74,21 @@ representation of the response.
 See the examples/ subdirectory for detailed examples.
 
 Get item attributes from DynamoDB.  Assume we have a table named
-'users' with a string hash key and attributes 'realName'
-and 'lastSeen'.
+'Thread' with a string hash key and sort key attributes 'ForumName'
+and 'Subject'.
 
 ```c
 	struct aws_handle *aws_dynamo;
 	struct aws_dynamo_v2_get_item_response *r = NULL;
 
-	const char *request = 
-"{\
-	\"TableName\":\"Thread\",\
-	\"Key\":{\
-		\"ForumName\":{\"S\":\"Amazon DynamoDB\"}, \
-		\"Subject\":{\"S\":\"How do I update multiple items?\"}, \
-	},\
-	\"ProjectionExpression\":\"LastPostDateTime, Message"\
-}";
+	const char *request = "{\
+	  \"TableName\":\"Thread\",\
+	  \"Key\":{\
+	  	\"ForumName\":{\"S\":\"Amazon DynamoDB\"}, \
+	  	\"Subject\":{\"S\":\"How do I update multiple items?\"}, \
+	  },\
+	  \"ProjectionExpression\":\"LastPostDateTime, Message"\
+  }";
 
 	aws_dynamo = aws_init(aws_access_key_id, aws_secret_access_key);
 
