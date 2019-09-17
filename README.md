@@ -16,10 +16,10 @@ My Extension
 ============
 
 * Fix 'calloc' function parameters order problem.
-* Fix memory leak when calling DynamoDB multiple times.
+* Fix memory leak when calling DynamoDB API multiple times.
 * Add DynamoDB v2 protocols response parsing.
 * Much simpler API calling for the DynamoDB v2 protocols.
-* DynamoDB v2 response parsing is much simpler to understand(no parse state and no need for template).
+* DynamoDB v2 response parsing is much simpler to understand(no parse state and no need for providing a template).
 * Fix DynamoDB 'query' and 'scan' bugs if response's 'count' attribute is placed before 'items' attribute.
 
 
@@ -66,9 +66,7 @@ $ sudo make install
 Basic Usage
 ===========
 
-For DynamoDB v2 support the library no longer provides an in-memory
-representation of the response.  Instead, users of the library need to
-parse the JSON response on their own.  See ./examples/v2-example.c
+~~For DynamoDB v2 support the library no longer provides an in-memory representation of the response.  Instead, users of the library need to parse the JSON response on their own.  See ./examples/v2-example.c~~
 
 For v1 the library parses the response and creates an in-memory
 representation of the response.
@@ -79,47 +77,23 @@ Get item attributes from DynamoDB.  Assume we have a table named
 'users' with a string hash key and attributes 'realName'
 and 'lastSeen'.
 
-```
-#define REAL_NAME_ATTRIBUTE_NAME	"realName"
-#define REAL_NAME_ATTRIBUTE_INDEX	0
-#define LAST_SEEN_ATTRIBUTE_NAME	"lastSeen"
-#define LAST_SEEN_ATTRIBUTE_INDEX	1
-
+```c
 	struct aws_handle *aws_dynamo;
-	struct aws_dynamo_attribute attributes[] = {
-		{
-			/* Index: REAL_NAME_ATTRIBUTE_INDEX */
-			.type = AWS_DYNAMO_STRING,
-			.name = REAL_NAME_ATTRIBUTE_NAME,
-			.name_len = strlen(REAL_NAME_ATTRIBUTE_NAME),
-		},
-		{
-			/* Index: LAST_SEEN_ATTRIBUTE_INDEX */
-			.type = AWS_DYNAMO_NUMBER,
-			.name = LAST_SEEN_ATTRIBUTE_NAME,
-			.name_len = strlen(LAST_SEEN_ATTRIBUTE_NAME),
-			.value.number.type = AWS_DYNAMO_NUMBER_INTEGER,
-		},
-	};
-	struct aws_dynamo_get_item_response *r = NULL;
-	struct aws_dynamo_attribute *real_name;
-	struct aws_dynamo_attribute *last_seen;
+	struct aws_dynamo_v2_get_item_response *r = NULL;
 
 	const char *request = 
 "{\
-	\"TableName\":\"users\",\
+	\"TableName\":\"Thread\",\
 	\"Key\":{\
-		\"HashKeyElement\":{\"S\":\"jdoe\"}
+		\"ForumName\":{\"S\":\"Amazon DynamoDB\"}, \
+		\"Subject\":{\"S\":\"How do I update multiple items?\"}, \
 	},\
-	\"AttributesToGet\":[\""\
-		REAL_NAME_ATTRIBUTE_NAME "\",\"" \
-		LAST_SEEN_ATTRIBUTE_NAME \
-	"\"]\
+	\"ProjectionExpression\":\"LastPostDateTime, Message"\
 }";
 
 	aws_dynamo = aws_init(aws_access_key_id, aws_secret_access_key);
 
-	r = aws_dynamo_get_item(aws_dynamo, request, attributes, sizeof(attributes) / sizeof(attributes[0]));
+	r = aws_dynamo_v2_get_item(aws_dynamo, request);
 
 	if (r == NULL) {
 		return -1;
@@ -130,13 +104,13 @@ and 'lastSeen'.
 		return;
 	}
 
-	real_name = &(r->item.attributes[REAL_NAME_ATTRIBUTE_INDEX]);
-	last_seen = &(r->item.attributes[LAST_SEEN_ATTRIBUTE_INDEX]);
+	struct aws_dynamo_attribute *lastPostDateTime = &(r->item.attributes[0]);
+	struct aws_dynamo_attribute *message = &(r->item.attributes[1]);
 
-	/* prints: "John Doe was last seen at 1391883778." */
-	printf("%s was last seen at %d.", real_name->value.string, last_seen->value.number.value.integer_val);
+	printf("message = %s\n", message->value.string);
+	printf("lastPostDateTime = %f\n", lastPostDateTime->value.number.value.double_val);
 
-	aws_dynamo_free_get_item_response(r);
+	aws_dynamo_free_v2_get_item_response(r);
 ```
 
 Notes
@@ -148,8 +122,7 @@ here:
 
 http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/operationlist.html
 
-As discussed above when the v2 API is used the caller is required to parse the
-JSON response.
+~~As discussed above when the v2 API is used the caller is required to parse the JSON response.~~
 
 Documentation for the v1 DynamoDB API can be found here:
 
@@ -161,8 +134,8 @@ See section, "Operations in Amazon DynamoDB" starting on page 331 for details
 on creating DynamoDB JSON requests.
 
 In many cases the caller also provides a template for the structure where the
-response will be written.  The then accesses the response attributes directly
-using known array indices.
+response will be written. They then accesses the response attributes directly
+using known array indices. For the V2 API you don't need to provide a template.
 
 The response json is parsed in all cases and returned to the caller in a C
 structure that must be free'd correctly when the caller is finished with it.
