@@ -75,6 +75,10 @@ struct aws_dynamo_v2_put_item_response *aws_dynamo_v2_put_item(struct aws_handle
     return r;
 }
 
+int aws_dynamo_v2_put_item2(struct aws_handle *aws, const char *request) {
+    return aws_dynamo_request(aws, AWS_DYNAMO_V2_PUT_ITEM, request);
+}
+
 void aws_dynamo_free_v2_put_item_response(struct aws_dynamo_v2_put_item_response *r) {
     struct aws_dynamo_item *item;
 

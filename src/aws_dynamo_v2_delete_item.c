@@ -76,6 +76,10 @@ struct aws_dynamo_v2_delete_item_response *aws_dynamo_v2_delete_item(struct aws_
     return r;
 }
 
+int aws_dynamo_v2_delete_item2(struct aws_handle *aws, const char *request) {
+    return aws_dynamo_request(aws, AWS_DYNAMO_V2_DELETE_ITEM, request);
+}
+
 void aws_dynamo_free_v2_delete_item_response(struct aws_dynamo_v2_delete_item_response *r) {
     struct aws_dynamo_item *item;
 
