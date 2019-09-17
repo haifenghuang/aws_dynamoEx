@@ -112,6 +112,16 @@ static int error_response_parser_string(void *ctx, const unsigned char *val,
 			_ctx->code = AWS_DYNAMO_CODE_INTERNAL_SERVER_ERROR;
 		} else if (AWS_DYNAMO_VALCMP(AWS_DYNAMO_SERVICE_UNAVAILABLE_EXCEPTION, type, typelen)) {
 			_ctx->code = AWS_DYNAMO_CODE_SERVICE_UNAVAILABLE_EXCEPTION;
+		} else if (AWS_DYNAMO_VALCMP(AWS_DYNAMO_REQUESTLIMIT_EXCEEDED, type, typelen)) {
+			_ctx->code = AWS_DYNAMO_CODE_REQUESTLIMIT_EXCEEDED;
+		} else if (AWS_DYNAMO_VALCMP(AWS_DYNAMO_ITEMCOLLECTION_SIZELIMIT_EXCEEDED_EXCEPTION, type, typelen)) {
+			_ctx->code = AWS_DYNAMO_CODE_ITEMCOLLECTION_SIZELIMIT_EXCEEDED_EXCEPTION;
+		} else if (AWS_DYNAMO_VALCMP(AWS_DYNAMO_TRANSACTION_CONFLICT_EXCEPTION, type, typelen)) {
+			_ctx->code = AWS_DYNAMO_CODE_TRANSACTION_CONFLICT_EXCEPTION;
+		} else if (AWS_DYNAMO_VALCMP(AWS_DYNAMO_SERIALIZATION_EXCEPTION, type, typelen)) {
+			_ctx->code = AWS_DYNAMO_CODE_SERIALIZATION_EXCEPTION;
+		} else if (AWS_DYNAMO_VALCMP(AWS_DYNAMO_INVALIDSIGNATURE_EXCEPTION, type, typelen)) {
+			_ctx->code = AWS_DYNAMO_CODE_INVALIDSIGNATURE_EXCEPTION;
 		} else {
 			char code[typelen + 1];
 			snprintf(code, typelen + 1, "%s", type);
@@ -270,8 +280,8 @@ static int aws_dynamo_parse_error_response(const unsigned char *response, int re
 		free(*message);
 		*message = strdup(_ctx.message);
 		free(_ctx.message);
-		*code = _ctx.code;
 	}
+	*code = _ctx.code;
 
 	switch(_ctx.code) {
 	case AWS_DYNAMO_CODE_ACCESS_DENIED_EXCEPTION:
@@ -282,6 +292,10 @@ static int aws_dynamo_parse_error_response(const unsigned char *response, int re
 	case AWS_DYNAMO_CODE_RESOURCE_IN_USE_EXCEPTION:
 	case AWS_DYNAMO_CODE_RESOURCE_NOT_FOUND_EXCEPTION:
 	case AWS_DYNAMO_CODE_VALIDATION_EXCEPTION:
+	case AWS_DYNAMO_CODE_REQUESTLIMIT_EXCEEDED:
+	case AWS_DYNAMO_CODE_ITEMCOLLECTION_SIZELIMIT_EXCEEDED_EXCEPTION:
+  case AWS_DYNAMO_CODE_SERIALIZATION_EXCEPTION:
+  case AWS_DYNAMO_CODE_INVALIDSIGNATURE_EXCEPTION:
 		/* the request should not be retried. */
 		rv = 0;
 		break;
@@ -291,6 +305,7 @@ static int aws_dynamo_parse_error_response(const unsigned char *response, int re
 	case AWS_DYNAMO_CODE_INTERNAL_FAILURE:
 	case AWS_DYNAMO_CODE_INTERNAL_SERVER_ERROR:
 	case AWS_DYNAMO_CODE_SERVICE_UNAVAILABLE_EXCEPTION:
+	case AWS_DYNAMO_CODE_TRANSACTION_CONFLICT_EXCEPTION:
 		/* the request should be retried. */
 		rv = 1;
 		break;
@@ -369,11 +384,12 @@ int aws_dynamo_request(struct aws_handle *aws, const char *target, const char *b
 		snprintf(aws->dynamo_message, sizeof(aws->dynamo_message), "%s",
 			message);
 		free(message);
-		aws->dynamo_errno = dynamodb_response_code;
+		/* aws->dynamo_errno = dynamodb_response_code; */
 	} else {
 		aws->dynamo_message[0] = '\0';
-		aws->dynamo_errno = AWS_DYNAMO_CODE_NONE;
+		/* aws->dynamo_errno = AWS_DYNAMO_CODE_NONE; */
 	}
+	aws->dynamo_errno = dynamodb_response_code;
 
 	return rv;
 }
